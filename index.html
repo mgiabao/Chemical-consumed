@@ -736,6 +736,70 @@ function getActiveFormulaPayloads() {
   return { rows: allRows, transactionId };
 }
 
+
+function formatDateForPdfName(dateText) {
+  const d = dateText ? new Date(dateText + 'T00:00:00') : new Date();
+  if (isNaN(d)) return new Date().toLocaleDateString('vi-VN').replace(/\//g, '.');
+  const dd = d.getDate();
+  const mm = d.getMonth() + 1;
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd}.${mm}.${yy}`;
+}
+
+function leatherNameForPdf() {
+  return String(currentLeather || 'PEGASUS').replace(/\s+/g, '').toLowerCase();
+}
+
+function buildPdfFileName() {
+  const dateText = document.getElementById('meta-date')?.value || new Date().toLocaleDateString('sv-SE');
+  return `${leatherNameForPdf()} ${formatDateForPdfName(dateText)}.pdf`;
+}
+
+function buildPdfHtmlForDrive() {
+  // Build a static copy of the current printable page so Apps Script can convert it to PDF.
+  const page = document.querySelector('.page');
+  const clone = page ? page.cloneNode(true) : document.body.cloneNode(true);
+
+  // Preserve current input/select values inside the cloned HTML.
+  const liveFields = Array.from(document.querySelectorAll('input, select, textarea'));
+  const cloneFields = Array.from(clone.querySelectorAll('input, select, textarea'));
+  liveFields.forEach((field, i) => {
+    const c = cloneFields[i];
+    if (!c) return;
+    const tag = field.tagName.toLowerCase();
+    if (tag === 'select') {
+      Array.from(c.options).forEach(opt => {
+        opt.removeAttribute('selected');
+        if (opt.value === field.value) opt.setAttribute('selected', 'selected');
+      });
+    } else if (tag === 'textarea') {
+      c.textContent = field.value || '';
+    } else {
+      c.setAttribute('value', field.value || '');
+    }
+  });
+
+  // PDF saved to Drive should look like the printed form, not the working screen.
+  clone.querySelectorAll('.record-btn,.print-btn,.record-status').forEach(el => el.remove());
+
+  const styles = Array.from(document.querySelectorAll('style')).map(s => s.textContent).join('\n');
+  return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<style>
+${styles}
+body{background:#fff!important;}
+.page{padding:0;max-width:100%;}
+.record-btn,.print-btn,.record-status{display:none!important;}
+.formula-card{break-inside:avoid;page-break-inside:avoid;}
+@page{margin:6mm 7mm;size:A4 portrait;}
+</style>
+</head>
+<body>${clone.outerHTML}</body>
+</html>`;
+}
+
 async function recordConsumedToSheet() {
   if (!APPS_SCRIPT_WEB_APP_URL || APPS_SCRIPT_WEB_APP_URL.includes('PASTE_YOUR')) {
     showRecordStatus('Chưa cấu hình Apps Script Web App URL. Hãy dán URL vào biến APPS_SCRIPT_WEB_APP_URL trong file HTML.', 'err');
@@ -752,7 +816,7 @@ async function recordConsumedToSheet() {
 
   const ftCount = rows.filter(r => r.type === 'FT_IN').length;
   const chemCount = rows.filter(r => r.type === 'CHEM_OUT').length;
-  const ok = confirm(`Bạn chắc chắn muốn record?\n\nFT tăng: ${ftCount} dòng\nHóa chất trừ: ${chemCount} dòng\nTổng dòng ghi vào sheet: ${rows.length}`);
+  const ok = confirm(`Bạn chắc chắn muốn record?\n\nFT tăng: ${ftCount} dòng\nHóa chất trừ: ${chemCount} dòng\nTổng dòng ghi vào sheet: ${rows.length}\nPDF sẽ lưu vào Google Drive: ${buildPdfFileName()}`);
   if (!ok) return;
 
   const btn = document.getElementById('recordBtn');
@@ -765,7 +829,7 @@ async function recordConsumedToSheet() {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'recordConsumed', transactionId, rows })
+      body: JSON.stringify({ action: 'recordConsumed', transactionId, rows, pdfHtml: buildPdfHtmlForDrive(), pdfFileName: buildPdfFileName() })
     });
 
     const text = await res.text();
@@ -776,7 +840,8 @@ async function recordConsumedToSheet() {
       throw new Error(data.message || ('HTTP ' + res.status));
     }
 
-    showRecordStatus(`Đã record thành công ${data.inserted || rows.length} dòng vào Google Sheet. Bây giờ bạn có thể bấm In phiếu A4 dọc.`, 'ok');
+    const pdfText = data.pdfUrl ? ` PDF đã lưu Drive: ${data.pdfFileName || buildPdfFileName()}` : ' PDF chưa được lưu do Apps Script không trả về link PDF.';
+    showRecordStatus(`Đã record thành công ${data.inserted || rows.length} dòng vào Google Sheet.${pdfText} Bây giờ bạn có thể bấm In phiếu A4 dọc.`, 'ok');
     setPrintReady(true);
   } catch (err) {
     setPrintReady(false);
