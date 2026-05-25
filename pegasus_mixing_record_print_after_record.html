@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEGASUS – Phiếu Pha Hóa Chất</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #fff;
+    color: #000;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 10px 12px 10px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid #000;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .brand {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .meta-row { display: flex; align-items: flex-end; gap: 12px; }
+
+  .meta-field { display: flex; flex-direction: column; gap: 1px; }
+  .meta-field label {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #555;
+  }
+  .meta-field input {
+    border: none;
+    border-bottom: 1px solid #aaa;
+    background: transparent;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 11px;
+    color: #000;
+    padding: 1px 0 2px;
+    outline: none;
+    width: 110px;
+  }
+  .meta-field input:focus { border-bottom-color: #000; }
+
+  .sig-inline { display: flex; flex-direction: column; gap: 1px; }
+  .sig-inline label { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #555; }
+  .sig-inline-box { width: 88px; height: 20px; border-bottom: 1px solid #aaa; }
+
+  .print-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: #16a34a; color: #fff; border: none;
+    padding: 5px 11px; border-radius: 4px; cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 600;
+    white-space: nowrap; flex-shrink: 0;
+    transition: background .15s ease, opacity .15s ease;
+  }
+  .print-btn:hover:not(:disabled) { background: #15803d; }
+  .print-btn:disabled {
+    background: #cfcfcf;
+    color: #777;
+    cursor: not-allowed;
+    opacity: .65;
+  }
+  .print-btn svg { width: 13px; height: 13px; }
+
+  /* ── GRID ── */
+  .formulas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  /* ── CARD ── */
+  .formula-card {
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #eee;
+    border-bottom: 1px solid #aaa;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .card-header-left { display: flex; flex-direction: column; gap: 0px; min-width: 0; flex: 1; }
+  .card-code { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #777; letter-spacing: .8px; }
+  .card-name { font-size: 11px; font-weight: 600; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .card-header-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+  .doc-field { display: flex; align-items: center; gap: 3px; }
+  .doc-field span { font-size: 9px; color: #555; white-space: nowrap; }
+  .doc-input {
+    width: 55px;
+    border: none;
+    border-bottom: 1px solid #aaa;
+    background: transparent;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px; color: #000;
+    padding: 1px 2px; outline: none;
+  }
+  .doc-input::placeholder { color: #bbb; }
+
+  .batch-control {
+    display: flex; align-items: center; gap: 4px;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 2px 7px;
+  }
+  .batch-control label { font-size: 9px; color: #000; white-space: nowrap; font-weight: 600; letter-spacing: .5px; }
+  .batch-input {
+    width: 46px;
+    border: none; border-bottom: 1.5px solid #000;
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px; font-weight: 700; color: #000;
+    padding: 0 2px; text-align: right; outline: none;
+  }
+  .batch-input::placeholder { color: #bbb; }
+  .batch-input:focus { border-bottom-color: #000; }
+  .batch-unit { font-size: 10px; color: #000; font-weight: 600; }
+
+  /* ── TABLE ── */
+  .chem-table { width: 100%; border-collapse: collapse; }
+
+  .chem-table thead th {
+    background: #f5f5f5;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #555;
+    font-weight: 600;
+    padding: 2px 5px;
+    text-align: left;
+    border-bottom: 1px solid #aaa;
+  }
+  .chem-table thead th.num { text-align: right; }
+
+  .chem-table tbody tr { border-bottom: .5px solid #ddd; }
+  .chem-table tbody tr:last-child { border-bottom: none; }
+  .chem-table td { padding: 1px 5px; vertical-align: middle; }
+
+  .item-code { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #777; }
+  .item-name { font-size: 10px; font-weight: 500; color: #000; }
+
+  .formula-qty {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: #000;
+    background: #eee;
+    border-radius: 2px; padding: 1px 4px;
+    display: inline-block; min-width: 34px; text-align: right;
+  }
+
+  .unit-badge { font-size: 8px; color: #777; }
+
+  .actual-input {
+    width: 56px;
+    border: 1px solid #aaa;
+    background: #fff;
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 600; color: #000;
+    padding: 1px 4px; text-align: right; outline: none;
+  }
+  .actual-input:focus { border-color: #000; }
+  .actual-input.overridden { border-color: #000; }
+
+  /* ── COLLAPSED CARD ── */
+  .card-body { display: none; }
+  .card-body.visible { display: block; }
+  .card-header.inactive { opacity: 0.5; }
+
+  /* ── DIFFERING ROW ── */
+  .row-diff { background: #ddd !important; }
+  .row-diff .item-code,
+  .row-diff .item-name,
+  .row-diff .unit-badge { color: #555; }
+  .row-diff .formula-qty { background: #ccc; color: #555; }
+
+  /* ── TOTAL ROW ── */
+  .total-row { background: #f5f5f5 !important; border-top: 1px solid #aaa !important; }
+  .total-row td { padding: 2px 5px; }
+  .total-label { font-weight: 600; font-size: 8px; text-transform: uppercase; letter-spacing: .6px; color: #555; }
+  .total-formula { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 10px; color: #000; text-align: right; }
+  .total-actual { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 10px; color: #000; background: #eee; border-radius: 2px; padding: 1px 4px; display: inline-block; min-width: 34px; text-align: right; }
+
+
+
+  /* ── RECORD TO GOOGLE SHEET ── */
+  .record-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: #000; color: #fff; border: none;
+    padding: 5px 11px; border-radius: 4px; cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 600;
+    white-space: nowrap; flex-shrink: 0;
+    transition: background .15s ease, opacity .15s ease;
+  }
+  .record-btn:hover:not(:disabled) { background: #333; }
+  .record-btn:disabled { background:#999; cursor:not-allowed; opacity:.75; }
+  .record-status {
+    margin-bottom: 7px;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    color: #111;
+    border-radius: 4px;
+    font-size: 10px;
+    display: none;
+  }
+  .record-status.show { display:block; }
+  .record-status.ok { border-color:#0a7; background:#eefbf5; }
+  .record-status.err { border-color:#c00; background:#fff0f0; }
+  .record-status.warn { border-color:#b8860b; background:#fff8df; }
+  @media print {
+    .record-btn, .record-status { display: none !important; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; }
+    .page { padding: 0; max-width: 100%; }
+    .print-btn { display: none !important; }
+    .actual-input { border: 1px solid #aaa; background: #fff; color: #000; }
+    .formula-card { break-inside: avoid; }
+    @page { margin: 6mm 7mm; size: A4 portrait; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="brand">PEGASUS</div>
+      <div class="meta-row">
+        <div class="meta-field">
+          <label>Ngày</label>
+          <input type="date" id="meta-date" />
+        </div>
+        <div class="meta-field">
+          <label>Leader</label>
+          <input type="text" id="meta-leader" placeholder="Họ tên..." style="width:115px" />
+        </div>
+        <div class="sig-inline">
+          <label>Ký tên</label>
+          <div class="sig-inline-box"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <button class="record-btn" id="recordBtn" onclick="recordConsumedToSheet()" type="button">✓ Record Consumed</button>
+      <button class="print-btn" id="printBtn" onclick="printIfReady()" type="button" disabled title="Cần Record Consumed thành công trước khi in">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      In phiếu A4 dọc
+      </button>
+    </div>
+  </div>
+
+  <div id="recordStatus" class="record-status"></div>
+
+  <div class="formulas-grid" id="formulas-container"></div>
+
+</div>
+
+<script>
+const FORMULAS = [
+  {
+    code: "FT089FR08828",
+    name: "FONDO ROLLER 8828",
+    chemicals: [
+      { code: "QP06444", name: "PRIMAL SCL-371", qty: 5 },
+      { code: "QM06517", name: "SADE VM", qty: 3 },
+      { code: "QP07205", name: "RODA CRYL 5416", qty: 5 },
+      { code: "QP09020", name: "RECYCLED WATER", qty: 22 },
+      { code: "QP07806", name: "EUDERM X-GRADE MP 2/N", qty: 8 },
+      { code: "QP08234", name: "UNIRES RU-13-134", qty: 6 },
+      { code: "QP08377", name: "EUDERM X-GRADE FH/N", qty: 15 },
+      { code: "QP08901", name: "RODA CRYL 5748", qty: 5 },
+      { code: "QP08557", name: "XR-13-906", qty: 2 },
+      { code: "QP04172", name: "ASTACIN GROUND UH TF", qty: 14 },
+      { code: "QM04436", name: "SADE WHITE TP", qty: 15 },
+      { code: "QP08854", name: "REGEL PU-301", qty: 0.1 }
+    ]
+  },
+  {
+    code: "FT089LA01127",
+    name: "LACA AGUA 1127",
+    chemicals: [
+      { code: "QM05350", name: "SADELACQUER CWB", qty: 58 },
+      { code: "QP09020", name: "RECYCLED WATER", qty: 35 },
+      { code: "QM07694", name: "SADESIL PM", qty: 1.5 },
+      { code: "QP08551", name: "WT-72-500", qty: 5 },
+      { code: "QP09287", name: "XR-55-400", qty: 1 }
+    ]
+  },
+  {
+    code: "FT089PI20754",
+    name: "PINTURA 20754",
+    chemicals: [
+      { code: "QP06444", name: "PRIMAL SCL-371", qty: 7.5 },
+      { code: "QM06517", name: "SADE VM", qty: 4 },
+      { code: "QP06659", name: "RODA PURE LUSTER 1430", qty: 5 },
+      { code: "QP06933", name: "RODA PURE PREBASE 772", qty: 5 },
+      { code: "QP07006", name: "MELIO PROMUL CU-47.A LIQ", qty: 7.5 },
+      { code: "QP09020", name: "RECYCLED WATER", qty: 18 },
+      { code: "QP08497", name: "RH-6678", qty: 15 },
+      { code: "QP08854", name: "REGEL PU-301", qty: 0.5 },
+      { code: "QP08901", name: "RODA CRYL 5748", qty: 7.5 },
+      { code: "QP08914", name: "RODA WAX MONO", qty: 5 },
+      { code: "QP02050", name: "AMMONIA WATER 24%", qty: 0.3 },
+      { code: "QM04461", name: "SADE WHITE 2059", qty: 25 },
+      { code: "QP08557", name: "XR-13-906", qty: 2 }
+    ]
+  },
+  {
+    code: "FT089FR08836",
+    name: "FONDO ROLLER 8836",
+    chemicals: [
+      { code: "QP05490", name: "DENSOTAN A", qty: 2.5 },
+      { code: "QP06444", name: "PRIMAL SCL-371 EMULSION", qty: 7.5 },
+      { code: "QM06517", name: "SADE VM", qty: null },
+      { code: "QP07205", name: "RODA CRYL 5416", qty: 15 },
+      { code: "QP09020", name: "RECYCLED WATER", qty: 10 },
+      { code: "QP07806", name: "EUDERM X-GRADE MP 2/N", qty: 8 },
+      { code: "QP08377", name: "EUDERM X-GRADE FH/N", qty: 25 },
+      { code: "QP08478", name: "EUDERM NAPPA SOFT MF", qty: 5 },
+      { code: "QP08557", name: "XR-13-906", qty: 2 },
+      { code: "QP08854", name: "REGEL PU-301", qty: 0.1 },
+      { code: "QP04172", name: "ASTACIN GROUND UH TF", qty: 10 },
+      { code: "QM04436", name: "SADE WHITE TP", qty: 15 }
+    ]
+  },
+  {
+    code: "FT089ST04409",
+    name: "STUCCO 4409 (SEL-6)",
+    chemicals: [
+      { code: "QP05883", name: "PM", qty: 3 },
+      { code: "QP08303", name: "EUDERM X-GRADE CGS 2", qty: 75 },
+      { code: "QM04436", name: "SADE WHITE TP", qty: 10 },
+      { code: "QP08000", name: "COLD WATER", qty: 12 }
+    ]
+  }
+];
+
+
+// ─────────────────────────────────────────────────────────────
+// GOOGLE SHEET RECORD SETTINGS
+// Bước 1: tạo Google Apps Script Web App bằng code tôi gửi kèm.
+// Bước 2: dán URL Web App vào biến dưới đây.
+// Ví dụ: const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
+// ─────────────────────────────────────────────────────────────
+const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwZgk0CprzWj0xHwUYA6klSpVqF8Al2yQoOxXPtw01OhHPxODdaMgn7o-sR27ESioCP/exec';
+
+function showRecordStatus(message, type = 'warn') {
+  const box = document.getElementById('recordStatus');
+  if (!box) return;
+  box.textContent = message;
+  box.className = 'record-status show ' + type;
+}
+
+let isRecordConfirmedForPrint = false;
+
+function setPrintReady(ready) {
+  isRecordConfirmedForPrint = !!ready;
+  const printBtn = document.getElementById('printBtn');
+  if (!printBtn) return;
+  printBtn.disabled = !ready;
+  printBtn.title = ready
+    ? 'Đã record thành công, có thể in phiếu A4 dọc'
+    : 'Cần Record Consumed thành công trước khi in';
+}
+
+function printIfReady() {
+  if (!isRecordConfirmedForPrint) {
+    showRecordStatus('Bạn cần bấm Record Consumed thành công trước khi in phiếu A4 dọc.', 'warn');
+    return;
+  }
+  window.print();
+}
+
+function markFormChangedAfterRecord() {
+  if (isRecordConfirmedForPrint) {
+    setPrintReady(false);
+    showRecordStatus('Phiếu đã thay đổi sau khi record. Vui lòng Record Consumed lại trước khi in.', 'warn');
+  }
+}
+
+function getActiveFormulaPayloads() {
+  const date = document.getElementById('meta-date').value || new Date().toLocaleDateString('sv-SE');
+  const leader = document.getElementById('meta-leader').value || '';
+  const now = new Date();
+  const transactionId = [
+    'PEGASUS',
+    date,
+    leader || 'NO-LEADER',
+    now.getTime()
+  ].join('|');
+  const allRows = [];
+
+  FORMULAS.forEach((formula, idx) => {
+    const batchInput = document.getElementById(`batch_${idx}`);
+    const batchKg = parseFloat(batchInput?.value);
+    if (isNaN(batchKg) || batchKg <= 0) return;
+
+    const docInput = document.querySelector(`#card_${idx} .doc-input`);
+    const docNo = docInput ? docInput.value.trim() : '';
+
+    // 1) Dòng FT thành phẩm: số dương
+    allRows.push({
+      date,
+      type: 'FT_IN',
+      itemNumber: formula.code,
+      description: formula.name,
+      qty: Number(batchKg.toFixed(3)),
+      formulaCode: formula.code,
+      formulaName: formula.name,
+      batchKg: Number(batchKg.toFixed(3)),
+      leader,
+      docNo,
+      transactionId
+    });
+
+    // 2) Dòng hóa chất nguyên liệu: số âm, lấy theo ô SL thực tế
+    formula.chemicals.forEach((chem, ci) => {
+      const input = document.getElementById(`act_f${idx}_c${ci}`);
+      const actualKg = parseFloat(input?.value);
+      if (isNaN(actualKg) || actualKg === 0) return;
+      allRows.push({
+        date,
+        type: 'CHEM_OUT',
+        itemNumber: chem.code,
+        description: chem.name,
+        qty: -Math.abs(Number(actualKg.toFixed(3))),
+        formulaCode: formula.code,
+        formulaName: formula.name,
+        batchKg: Number(batchKg.toFixed(3)),
+        leader,
+        docNo,
+        transactionId
+      });
+    });
+  });
+
+  return { rows: allRows, transactionId };
+}
+
+async function recordConsumedToSheet() {
+  if (!APPS_SCRIPT_WEB_APP_URL || APPS_SCRIPT_WEB_APP_URL.includes('PASTE_YOUR')) {
+    showRecordStatus('Chưa cấu hình Apps Script Web App URL. Hãy dán URL vào biến APPS_SCRIPT_WEB_APP_URL trong file HTML.', 'err');
+    return;
+  }
+
+  const payload = getActiveFormulaPayloads();
+  const rows = payload.rows;
+  const transactionId = payload.transactionId;
+  if (!rows.length) {
+    showRecordStatus('Chưa có công thức nào được nhập Pha > 0, không có dữ liệu để record.', 'warn');
+    return;
+  }
+
+  const ftCount = rows.filter(r => r.type === 'FT_IN').length;
+  const chemCount = rows.filter(r => r.type === 'CHEM_OUT').length;
+  const ok = confirm(`Bạn chắc chắn muốn record?\n\nFT tăng: ${ftCount} dòng\nHóa chất trừ: ${chemCount} dòng\nTổng dòng ghi vào sheet: ${rows.length}`);
+  if (!ok) return;
+
+  const btn = document.getElementById('recordBtn');
+  setPrintReady(false);
+  if (btn) { btn.disabled = true; btn.textContent = 'Recording...'; }
+  showRecordStatus('Đang ghi dữ liệu lên Google Sheet...', 'warn');
+
+  try {
+    const res = await fetch(APPS_SCRIPT_WEB_APP_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'recordConsumed', transactionId, rows })
+    });
+
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch (e) { data = { ok:false, message:text }; }
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.message || ('HTTP ' + res.status));
+    }
+
+    showRecordStatus(`Đã record thành công ${data.inserted || rows.length} dòng vào Google Sheet. Bây giờ bạn có thể bấm In phiếu A4 dọc.`, 'ok');
+    setPrintReady(true);
+  } catch (err) {
+    setPrintReady(false);
+    showRecordStatus('Record thất bại: ' + (err.message || err), 'err');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Record Consumed'; }
+  }
+}
+
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '';
+  return parseFloat(n.toFixed(3)).toString();
+}
+
+function buildCard(formula, idx) {
+  const baseSum = formula.chemicals.reduce((s, c) => s + (c.qty || 0), 0);
+
+  const rows = formula.chemicals.map((chem, ci) => {
+    const rowId = `f${idx}_c${ci}`;
+    const fqtySpan = chem.qty !== null
+      ? `<span class="formula-qty">${fmt(chem.qty)}</span>`
+      : `<span class="formula-qty" style="background:none;"></span>`;
+    return `<tr>
+      <td class="item-code">${chem.code}</td>
+      <td class="item-name">${chem.name}</td>
+      <td style="text-align:right">${fqtySpan}</td>
+      <td><span class="unit-badge">KG</span></td>
+      <td style="text-align:right">
+        <input class="actual-input" type="number" step="0.001" min="0"
+          id="act_${rowId}" placeholder="—"
+          onchange="markOverride(this)" oninput="updateTotals(${idx})" />
+      </td>
+      <td><span class="unit-badge">KG</span></td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="formula-card" id="card_${idx}">
+    <div class="card-header inactive" id="header_${idx}">
+      <div class="card-header-left">
+        <span class="card-code">${formula.code}</span>
+        <span class="card-name">${formula.name}</span>
+      </div>
+      <div class="card-header-right">
+        <div class="doc-field">
+          <span>Doc:</span>
+          <input class="doc-input" type="text" placeholder="..." />
+        </div>
+        <div class="batch-control">
+          <label>Pha:</label>
+          <input class="batch-input" type="number" step="0.1" min="0"
+            id="batch_${idx}" placeholder="0"
+            oninput="onBatchChange(${idx})" onblur="onBatchBlur(${idx})" />
+          <span class="batch-unit">KG</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" id="body_${idx}">
+    <table class="chem-table">
+      <thead><tr>
+        <th style="width:66px">Mã vật tư</th>
+        <th>Tên hóa chất</th>
+        <th class="num" style="width:60px">Công thức</th>
+        <th style="width:22px">ĐV</th>
+        <th class="num" style="width:64px">SL thực tế</th>
+        <th style="width:22px">ĐV</th>
+      </tr></thead>
+      <tbody>
+        ${rows}
+        <tr class="total-row">
+          <td colspan="2" class="total-label">Tổng cộng</td>
+          <td style="text-align:right"><span class="total-formula" id="total_formula_${idx}">${fmt(baseSum)}</span></td>
+          <td><span class="unit-badge">KG</span></td>
+          <td style="text-align:right"><span class="total-actual" id="total_actual_${idx}">—</span></td>
+          <td><span class="unit-badge">KG</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>`;
+}
+
+function reorderCards() {
+  const container = document.getElementById('formulas-container');
+  const cards = Array.from(container.children);
+  // active = has batch value > 0
+  const active = cards.filter(c => {
+    const idx = c.id.replace('card_', '');
+    const v = parseFloat(document.getElementById(`batch_${idx}`).value);
+    return !isNaN(v) && v > 0;
+  });
+  const inactive = cards.filter(c => !active.includes(c));
+  [...active, ...inactive].forEach(c => container.appendChild(c));
+}
+
+function onBatchChange(idx) {
+  markFormChangedAfterRecord();
+  const batchVal = parseFloat(document.getElementById(`batch_${idx}`).value);
+  const formula = FORMULAS[idx];
+  const body = document.getElementById(`body_${idx}`);
+  const header = document.getElementById(`header_${idx}`);
+  const active = !isNaN(batchVal) && batchVal > 0;
+  body.classList.toggle('visible', active);
+  header.classList.toggle('inactive', !active);
+  formula.chemicals.forEach((chem, ci) => {
+    const actInput = document.getElementById(`act_f${idx}_c${ci}`);
+    if (active) {
+      if (chem.qty !== null && !actInput.classList.contains('overridden'))
+        actInput.value = fmt(chem.qty * batchVal / 100);
+    } else {
+      if (chem.qty !== null && !actInput.classList.contains('overridden'))
+        actInput.value = '';
+    }
+  });
+  updateTotals(idx);
+}
+
+function onBatchBlur(idx) {
+  reorderCards();
+}
+
+function markOverride(input) {
+  markFormChangedAfterRecord();
+  input.classList.toggle('overridden', input.value !== '');
+}
+
+function updateTotals(idx) {
+  const formula = FORMULAS[idx];
+  const batchVal = parseFloat(document.getElementById(`batch_${idx}`).value);
+  let sum = 0, hasAny = false;
+  formula.chemicals.forEach((chem, ci) => {
+    const actInput = document.getElementById(`act_f${idx}_c${ci}`);
+    const row = actInput.closest('tr');
+    const v = parseFloat(actInput.value);
+    if (!isNaN(v)) {
+      sum += v; hasAny = true;
+      // compute expected
+      const expected = (!isNaN(batchVal) && batchVal > 0 && chem.qty !== null)
+        ? parseFloat(fmt(chem.qty * batchVal / 100)) : null;
+      const isDiff = expected !== null && Math.abs(v - expected) > 0.0005;
+      row.classList.toggle('row-diff', isDiff);
+    } else {
+      row.classList.remove('row-diff');
+    }
+  });
+  document.getElementById(`total_actual_${idx}`).textContent = hasAny ? fmt(sum) : '—';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('meta-date').value = new Date().toLocaleDateString('sv-SE');
+  const container = document.getElementById('formulas-container');
+  FORMULAS.forEach((formula, idx) => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = buildCard(formula, idx);
+    container.appendChild(wrap.firstElementChild);
+  });
+  setPrintReady(false);
+  document.getElementById('meta-date')?.addEventListener('input', markFormChangedAfterRecord);
+  document.getElementById('meta-leader')?.addEventListener('input', markFormChangedAfterRecord);
+  document.querySelectorAll('.doc-input').forEach(el => el.addEventListener('input', markFormChangedAfterRecord));
+});
+</script>
+</body>
+</html>
