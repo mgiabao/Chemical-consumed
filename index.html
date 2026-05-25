@@ -112,48 +112,45 @@
 
   .card-header {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
     justify-content: space-between;
     background: #eee;
     border-bottom: 1px solid #aaa;
     padding: 4px 8px;
-    gap: 6px;
+    gap: 3px 6px;
   }
 
-  .card-header-left { display: flex; flex-direction: column; gap: 0px; min-width: 0; flex: 1; }
+  .card-header-left { display: flex; flex-direction: column; gap: 0px; min-width: 0; flex: 1 1 100%; }
   .card-code { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #777; letter-spacing: .8px; }
-  .card-name { font-size: 11px; font-weight: 600; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-name { font-size: 11px; font-weight: 600; color: #000; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.12; overflow-wrap: anywhere; }
 
-  .card-header-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+  .card-header-right { display: flex; align-items: center; justify-content: flex-end; gap: 5px; flex: 1 1 100%; }
 
   .doc-field { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
   .doc-field span { font-size: 9px; color: #555; white-space: nowrap; }
-  .doc-input {
-    width: 78px;
-    border: none;
+  .doc-blank {
+    width: 86px;
+    height: 18px;
     border-bottom: 1px solid #aaa;
     background: transparent;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 10px; color: #000;
-    padding: 1px 2px; outline: none;
   }
-  .doc-input::placeholder { color: #bbb; }
 
   .batch-control {
     display: flex; align-items: center; gap: 4px;
     background: #fff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 2px 7px;
+    padding: 2px 8px;
   }
   .batch-control label { font-size: 9px; color: #000; white-space: nowrap; font-weight: 600; letter-spacing: .5px; }
   .batch-input {
-    width: 46px;
+    width: 70px;
     border: none; border-bottom: 1.5px solid #000;
     background: transparent;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 14px; font-weight: 700; color: #000;
-    padding: 0 2px; text-align: right; outline: none;
+    padding: 0 4px; text-align: right; outline: none;
   }
   .batch-input::placeholder { color: #bbb; }
   .batch-input:focus { border-bottom-color: #000; }
@@ -696,8 +693,8 @@ function getActiveFormulaPayloads() {
     const batchKg = parseFloat(batchInput?.value);
     if (isNaN(batchKg) || batchKg <= 0) return;
 
-    const docInput = document.querySelector(`#card_${idx} .doc-input`);
-    const docNo = docInput ? docInput.value.trim() : '';
+    // Doc is intentionally left blank for handwriting after printing.
+    const docNo = '';
 
     // 1) Dòng FT thành phẩm: số dương
     allRows.push({
@@ -829,7 +826,7 @@ function buildCard(formula, idx) {
       <div class="card-header-right">
         <div class="doc-field">
           <span>Doc:</span>
-          <input class="doc-input" type="text" placeholder="..." />
+          <div class="doc-blank"></div>
         </div>
         <div class="batch-control">
           <label>Pha:</label>
@@ -945,7 +942,7 @@ function renderFormulasForCurrentLeather() {
     container.appendChild(wrap.firstElementChild);
   });
 
-  document.querySelectorAll('.doc-input').forEach(el => el.addEventListener('input', markFormChangedAfterRecord));
+  // Doc is a blank handwriting line, so no input listener is needed here.
 }
 
 function switchLeatherType() {
