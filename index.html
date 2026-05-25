@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PEGASUS – Phiếu Pha Hóa Chất</title>
+<title>Phiếu Pha Hóa Chất</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -54,7 +54,8 @@
     letter-spacing: 1px;
     color: #555;
   }
-  .meta-field input {
+  .meta-field input,
+  .meta-field select {
     border: none;
     border-bottom: 1px solid #aaa;
     background: transparent;
@@ -65,7 +66,13 @@
     outline: none;
     width: 110px;
   }
-  .meta-field input:focus { border-bottom-color: #000; }
+  .meta-field select {
+    width: 115px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .meta-field input:focus,
+  .meta-field select:focus { border-bottom-color: #000; }
 
   .sig-inline { display: flex; flex-direction: column; gap: 1px; }
   .sig-inline label { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #555; }
@@ -119,10 +126,10 @@
 
   .card-header-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
 
-  .doc-field { display: flex; align-items: center; gap: 3px; }
+  .doc-field { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
   .doc-field span { font-size: 9px; color: #555; white-space: nowrap; }
   .doc-input {
-    width: 55px;
+    width: 78px;
     border: none;
     border-bottom: 1px solid #aaa;
     background: transparent;
@@ -263,7 +270,7 @@
 
   <div class="header">
     <div class="header-left">
-      <div class="brand">PEGASUS</div>
+      <div class="brand" id="brandTitle">PEGASUS</div>
       <div class="meta-row">
         <div class="meta-field">
           <label>Ngày</label>
@@ -272,6 +279,13 @@
         <div class="meta-field">
           <label>Leader</label>
           <input type="text" id="meta-leader" placeholder="Họ tên..." style="width:115px" />
+        </div>
+        <div class="meta-field">
+          <label>Loại da</label>
+          <select id="leather-select">
+            <option value="PEGASUS">PEGASUS</option>
+            <option value="GRAND SLAM">GRAND SLAM</option>
+          </select>
         </div>
         <div class="sig-inline">
           <label>Ký tên</label>
@@ -298,7 +312,8 @@
 </div>
 
 <script>
-const FORMULAS = [
+const FORMULAS_BY_LEATHER = {
+  "PEGASUS": [
   {
     code: "FT089FR08828",
     name: "FONDO ROLLER 8828",
@@ -375,7 +390,251 @@ const FORMULAS = [
       { code: "QP08000", name: "COLD WATER", qty: 12 }
     ]
   }
-];
+],
+  "GRAND SLAM": [
+  {
+    "code": "FT089IM00302",
+    "name": "IMPREGNACION 0302",
+    "baseKg": 1000,
+    "chemicals": [
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 580
+      },
+      {
+        "code": "QP03290",
+        "name": "TITEKOTE RI-115",
+        "qty": 350
+      },
+      {
+        "code": "QM04291",
+        "name": "SADEPE PE",
+        "qty": 70
+      }
+    ]
+  },
+  {
+    "code": "FT089FR08826",
+    "name": "FONDO ROLLER 8826",
+    "chemicals": [
+      {
+        "code": "QP05490",
+        "name": "DENSOTAN A",
+        "qty": 2.5
+      },
+      {
+        "code": "QP06444",
+        "name": "PRIMAL SCL-371",
+        "qty": 5
+      },
+      {
+        "code": "QP07205",
+        "name": "RODA CRYL 5416",
+        "qty": 10
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 15
+      },
+      {
+        "code": "QP07806",
+        "name": "EUDERM X-GRADE MP 2/N",
+        "qty": 5
+      },
+      {
+        "code": "QP08324",
+        "name": "UNIRES RU-76-125",
+        "qty": 5
+      },
+      {
+        "code": "QP08377",
+        "name": "EUDERM X-GRADE FH/N",
+        "qty": 25
+      },
+      {
+        "code": "QP08557",
+        "name": "XR-13-906",
+        "qty": 2.5
+      },
+      {
+        "code": "QP04172",
+        "name": "ASTACIN GROUND UH TF",
+        "qty": 15
+      },
+      {
+        "code": "QM04436",
+        "name": "SADE WHITE TP",
+        "qty": 15
+      },
+      {
+        "code": "QM06517",
+        "name": "SADE VM",
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "code": "FT089LA01070",
+    "name": "LACA AGUA 1070",
+    "chemicals": [
+      {
+        "code": "QM05350",
+        "name": "SADELACQUER CWB",
+        "qty": 58
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 36
+      },
+      {
+        "code": "QM07694",
+        "name": "SADESIL PM",
+        "qty": 1.5
+      },
+      {
+        "code": "QM04294",
+        "name": "SADEDULLER DW",
+        "qty": 5
+      },
+      {
+        "code": "QP02050",
+        "name": "AMMONIA WATER 24%",
+        "qty": 0.3
+      }
+    ]
+  },
+  {
+    "code": "FT089PI20751",
+    "name": "PINTURA 20751",
+    "chemicals": [
+      {
+        "code": "QP06444",
+        "name": "PRIMAL SCL-371",
+        "qty": 17
+      },
+      {
+        "code": "QM06517",
+        "name": "SADE VM",
+        "qty": 2
+      },
+      {
+        "code": "QM06827",
+        "name": "SADE WHITE 443",
+        "qty": 24
+      },
+      {
+        "code": "QP07205",
+        "name": "RODA CRYL 5416",
+        "qty": 17
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 13
+      },
+      {
+        "code": "QP08234",
+        "name": "UNIRES RU-13-134",
+        "qty": 4
+      },
+      {
+        "code": "QP08478",
+        "name": "EUDERM NAPPA SOFT MF",
+        "qty": 2
+      },
+      {
+        "code": "QP08558",
+        "name": "UNIRES RU-13-734",
+        "qty": 8.5
+      },
+      {
+        "code": "QP08854",
+        "name": "REGEL PU-301",
+        "qty": 0.4
+      },
+      {
+        "code": "QP02050",
+        "name": "AMMONIA WATER 24%",
+        "qty": 0.3
+      },
+      {
+        "code": "QM04291",
+        "name": "SADEPE PE",
+        "qty": 0.5
+      },
+      {
+        "code": "QM04294",
+        "name": "SADEDULLER DW",
+        "qty": 9
+      },
+      {
+        "code": "QP08557",
+        "name": "XR-13-906",
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "code": "FT089ST04409",
+    "name": "STUCCO 4409 (SEL9)",
+    "chemicals": [
+      {
+        "code": "QP05883",
+        "name": "PM",
+        "qty": 3
+      },
+      {
+        "code": "QP08303",
+        "name": "EUDERM X-GRADE CGS 2",
+        "qty": 75
+      },
+      {
+        "code": "QM04436",
+        "name": "SADE WHITE TP",
+        "qty": 10
+      },
+      {
+        "code": "QP08000",
+        "name": "COLD WATER",
+        "qty": 12
+      }
+    ]
+  },
+  {
+    "code": "FT089IM00318",
+    "name": "IMPREGNACION 0318 (LOO)",
+    "baseKg": 1000,
+    "chemicals": [
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 480
+      },
+      {
+        "code": "QP03290",
+        "name": "TITEKOTE RI-115",
+        "qty": 350
+      },
+      {
+        "code": "QP03382",
+        "name": "CORIAL BINDER IF",
+        "qty": 100
+      },
+      {
+        "code": "QM04291",
+        "name": "SADEPE PE",
+        "qty": 70
+      }
+    ]
+  }
+]
+};
+
+let currentLeather = "PEGASUS";
+let FORMULAS = FORMULAS_BY_LEATHER[currentLeather];
 
 
 // ─────────────────────────────────────────────────────────────
@@ -425,7 +684,7 @@ function getActiveFormulaPayloads() {
   const leader = document.getElementById('meta-leader').value || '';
   const now = new Date();
   const transactionId = [
-    'PEGASUS',
+    currentLeather.replace(/\s+/g, '-'),
     date,
     leader || 'NO-LEADER',
     now.getTime()
@@ -449,6 +708,7 @@ function getActiveFormulaPayloads() {
       qty: Number(batchKg.toFixed(3)),
       formulaCode: formula.code,
       formulaName: formula.name,
+      leatherType: currentLeather,
       batchKg: Number(batchKg.toFixed(3)),
       leader,
       docNo,
@@ -527,6 +787,10 @@ async function recordConsumedToSheet() {
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = '✓ Record Consumed'; }
   }
+}
+
+function formulaBase(formula) {
+  return Number(formula && formula.baseKg ? formula.baseKg : 100);
 }
 
 function fmt(n) {
@@ -627,7 +891,7 @@ function onBatchChange(idx) {
     const actInput = document.getElementById(`act_f${idx}_c${ci}`);
     if (active) {
       if (chem.qty !== null && !actInput.classList.contains('overridden'))
-        actInput.value = fmt(chem.qty * batchVal / 100);
+        actInput.value = fmt(chem.qty * batchVal / formulaBase(formula));
     } else {
       if (chem.qty !== null && !actInput.classList.contains('overridden'))
         actInput.value = '';
@@ -657,7 +921,7 @@ function updateTotals(idx) {
       sum += v; hasAny = true;
       // compute expected
       const expected = (!isNaN(batchVal) && batchVal > 0 && chem.qty !== null)
-        ? parseFloat(fmt(chem.qty * batchVal / 100)) : null;
+        ? parseFloat(fmt(chem.qty * batchVal / formulaBase(formula))) : null;
       const isDiff = expected !== null && Math.abs(v - expected) > 0.0005;
       row.classList.toggle('row-diff', isDiff);
     } else {
@@ -667,18 +931,52 @@ function updateTotals(idx) {
   document.getElementById(`total_actual_${idx}`).textContent = hasAny ? fmt(sum) : '—';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('meta-date').value = new Date().toLocaleDateString('sv-SE');
+
+function renderFormulasForCurrentLeather() {
   const container = document.getElementById('formulas-container');
+  if (!container) return;
+
+  FORMULAS = FORMULAS_BY_LEATHER[currentLeather] || [];
+  container.innerHTML = '';
+
   FORMULAS.forEach((formula, idx) => {
     const wrap = document.createElement('div');
     wrap.innerHTML = buildCard(formula, idx);
     container.appendChild(wrap.firstElementChild);
   });
+
+  document.querySelectorAll('.doc-input').forEach(el => el.addEventListener('input', markFormChangedAfterRecord));
+}
+
+function switchLeatherType() {
+  const select = document.getElementById('leather-select');
+  currentLeather = select ? select.value : 'PEGASUS';
+
+  const brand = document.getElementById('brandTitle');
+  if (brand) brand.textContent = currentLeather;
+
+  renderFormulasForCurrentLeather();
   setPrintReady(false);
+  showRecordStatus('Đã đổi sang ' + currentLeather + '. Vui lòng nhập Pha và Record Consumed trước khi in.', 'warn');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('meta-date').value = new Date().toLocaleDateString('sv-SE');
+
+  const leatherSelect = document.getElementById('leather-select');
+  if (leatherSelect) {
+    leatherSelect.value = currentLeather;
+    leatherSelect.addEventListener('change', switchLeatherType);
+  }
+
+  const brand = document.getElementById('brandTitle');
+  if (brand) brand.textContent = currentLeather;
+
+  renderFormulasForCurrentLeather();
+  setPrintReady(false);
+
   document.getElementById('meta-date')?.addEventListener('input', markFormChangedAfterRecord);
   document.getElementById('meta-leader')?.addEventListener('input', markFormChangedAfterRecord);
-  document.querySelectorAll('.doc-input').forEach(el => el.addEventListener('input', markFormChangedAfterRecord));
 });
 </script>
 </body>
