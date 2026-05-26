@@ -213,6 +213,21 @@
   .row-diff .unit-badge { color: #555; }
   .row-diff .formula-qty { background: #ccc; color: #555; }
 
+  .diff-badge {
+    display: none;
+    font-size: 7.5px;
+    font-weight: 700;
+    color: #7a5500;
+    background: #ffe08a;
+    border: 1px solid #c8960c;
+    border-radius: 3px;
+    padding: 0px 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+    letter-spacing: .4px;
+  }
+  .row-diff .diff-badge { display: inline; }
+
   /* ── TOTAL ROW ── */
   .total-row { background: #f5f5f5 !important; border-top: 1px solid #aaa !important; }
   .total-row td { padding: 2px 5px; }
@@ -271,7 +286,7 @@
       <div class="meta-row">
         <div class="meta-field">
           <label>Ngày</label>
-          <input type="date" id="meta-date" />
+          <input type="text" id="meta-date" placeholder="DD/MM/YYYY" maxlength="10" style="width:90px" />
         </div>
         <div class="meta-field">
           <label>Leader</label>
@@ -677,7 +692,14 @@ function markFormChangedAfterRecord() {
 }
 
 function getActiveFormulaPayloads() {
-  const date = document.getElementById('meta-date').value || new Date().toLocaleDateString('sv-SE');
+  const rawDate = document.getElementById('meta-date').value || '';
+  let date;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)) {
+    const [d,m,y] = rawDate.split('/');
+    date = `${y}-${m}-${d}`;
+  } else {
+    date = new Date().toLocaleDateString('sv-SE');
+  }
   const leader = document.getElementById('meta-leader').value || '';
   const now = new Date();
   const transactionId = [
@@ -751,8 +773,15 @@ function leatherNameForPdf() {
 }
 
 function buildPdfFileName() {
-  const dateText = document.getElementById('meta-date')?.value || new Date().toLocaleDateString('sv-SE');
-  return `${leatherNameForPdf()} ${formatDateForPdfName(dateText)}.pdf`;
+  const rawDate = document.getElementById('meta-date')?.value || '';
+  let svDate;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)) {
+    const [d,m,y] = rawDate.split('/');
+    svDate = `${y}-${m}-${d}`;
+  } else {
+    svDate = new Date().toLocaleDateString('sv-SE');
+  }
+  return `${leatherNameForPdf()} ${formatDateForPdfName(svDate)}.pdf`;
 }
 
 function buildPdfHtmlForDrive() {
@@ -870,7 +899,7 @@ function buildCard(formula, idx) {
       : `<span class="formula-qty" style="background:none;"></span>`;
     return `<tr>
       <td class="item-code">${chem.code}</td>
-      <td class="item-name">${chem.name}</td>
+      <td class="item-name">${chem.name}<span class="diff-badge">(diff)</span></td>
       <td style="text-align:right">${fqtySpan}</td>
       <td><span class="unit-badge">KG</span></td>
       <td style="text-align:right">
@@ -984,7 +1013,8 @@ function updateTotals(idx) {
       // compute expected
       const expected = (!isNaN(batchVal) && batchVal > 0 && chem.qty !== null)
         ? parseFloat(fmt(chem.qty * batchVal / formulaBase(formula))) : null;
-      const isDiff = expected !== null && Math.abs(v - expected) > 0.0005;
+      // diff nếu: expected có mà lệch, HOẶC expected null (qty=null) mà có giá trị thực tế
+      const isDiff = (expected !== null && Math.abs(v - expected) > 0.0005) || (expected === null);
       row.classList.toggle('row-diff', isDiff);
     } else {
       row.classList.remove('row-diff');
@@ -1023,7 +1053,21 @@ function switchLeatherType() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('meta-date').value = new Date().toLocaleDateString('sv-SE');
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2,'0');
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const yyyy = today.getFullYear();
+  document.getElementById('meta-date').value = `${dd}/${mm}/${yyyy}`;
+
+  // Auto-format date input as user types: insert '/' automatically
+  document.getElementById('meta-date').addEventListener('input', function(e) {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length > 8) v = v.slice(0,8);
+    if (v.length >= 5) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+    else if (v.length >= 3) v = v.slice(0,2)+'/'+v.slice(2);
+    this.value = v;
+    markFormChangedAfterRecord();
+  });
 
   const leatherSelect = document.getElementById('leather-select');
   if (leatherSelect) {
