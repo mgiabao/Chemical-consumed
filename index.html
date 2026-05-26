@@ -297,6 +297,7 @@
           <select id="leather-select">
             <option value="PEGASUS">PEGASUS</option>
             <option value="GRAND SLAM">GRAND SLAM</option>
+            <option value="ACE">ACE</option>
           </select>
         </div>
         <div class="sig-inline">
@@ -642,10 +643,212 @@ const FORMULAS_BY_LEATHER = {
       }
     ]
   }
+],
+  "ACE": [
+  {
+    "code": "FT089IM00216",
+    "name": "IMPREGNACION 0216",
+    "baseKg": 1000,
+    "chemicals": [
+      {
+        "code": "QP06007",
+        "name": "PRIMAL FGR",
+        "qty": 100
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 630
+      },
+      {
+        "code": "QP08326",
+        "name": "TITEKOTE RI-78-060",
+        "qty": 100
+      },
+      {
+        "code": "QP03290",
+        "name": "TITEKOTE RI-115",
+        "qty": 100
+      },
+      {
+        "code": "QM04291",
+        "name": "SADEPE PE",
+        "qty": 70
+      }
+    ]
+  },
+  {
+    "code": "FT089FR08828",
+    "name": "FONDO ROLLER 8828",
+    "chemicals": [
+      {
+        "code": "QP06444",
+        "name": "PRIMAL SCL-371",
+        "qty": 5
+      },
+      {
+        "code": "QM06517",
+        "name": "SADE VM",
+        "qty": 3
+      },
+      {
+        "code": "QP07205",
+        "name": "RODA CRYL 5416",
+        "qty": 5
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 22
+      },
+      {
+        "code": "QP07806",
+        "name": "EUDERM X-GRADE MP 2/N",
+        "qty": 8
+      },
+      {
+        "code": "QP08234",
+        "name": "UNIRES RU-13-134",
+        "qty": 6
+      },
+      {
+        "code": "QP08377",
+        "name": "EUDERM X-GRADE FH/N",
+        "qty": 15
+      },
+      {
+        "code": "QP08901",
+        "name": "RODA CRYL 5748",
+        "qty": 5
+      },
+      {
+        "code": "QP08557",
+        "name": "XR-13-906",
+        "qty": 2
+      },
+      {
+        "code": "QP04172",
+        "name": "ASTACIN GROUND UH TF",
+        "qty": 14
+      },
+      {
+        "code": "QM04436",
+        "name": "SADE WHITE TP",
+        "qty": 15
+      },
+      {
+        "code": "QP08854",
+        "name": "REGEL PU-301",
+        "qty": 0.1
+      }
+    ]
+  },
+  {
+    "code": "FT089LA01108",
+    "name": "LACA AGUA 1108",
+    "chemicals": [
+      {
+        "code": "QM05350",
+        "name": "SADELACQUER CWB",
+        "qty": 58
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 37
+      },
+      {
+        "code": "QM07694",
+        "name": "SADESIL PM",
+        "qty": 1.5
+      },
+      {
+        "code": "QM04294",
+        "name": "SADEDULLER DW",
+        "qty": 4
+      }
+    ]
+  },
+  {
+    "code": "FT089PI20755",
+    "name": "PINTURA 20755",
+    "chemicals": [
+      {
+        "code": "QP06444",
+        "name": "PRIMAL SCL-371",
+        "qty": 8.5
+      },
+      {
+        "code": "QM06517",
+        "name": "SADE VM",
+        "qty": 4
+      },
+      {
+        "code": "QP07205",
+        "name": "RODA CRYL 5416",
+        "qty": 17
+      },
+      {
+        "code": "QP09020",
+        "name": "RECYCLED WATER",
+        "qty": 11.5
+      },
+      {
+        "code": "QP08234",
+        "name": "UNIRES RU-13-134",
+        "qty": 4
+      },
+      {
+        "code": "QP08478",
+        "name": "EUDERM NAPPA SOFT MF",
+        "qty": 2
+      },
+      {
+        "code": "QP08558",
+        "name": "UNIRES RU-13-734",
+        "qty": 8.5
+      },
+      {
+        "code": "QP08854",
+        "name": "REGEL PU-301",
+        "qty": 0.5
+      },
+      {
+        "code": "QP08901",
+        "name": "RODA CRYL 5748",
+        "qty": 8.5
+      },
+      {
+        "code": "QP02050",
+        "name": "AMMONIA WATER 24%",
+        "qty": 0.3
+      },
+      {
+        "code": "QP08557",
+        "name": "XR-13-906",
+        "qty": 2
+      },
+      {
+        "code": "QM04291",
+        "name": "SADEPE PE",
+        "qty": 0.5
+      },
+      {
+        "code": "QM04294",
+        "name": "SADEDULLER DW",
+        "qty": 9
+      },
+      {
+        "code": "QM04461",
+        "name": "SADE WHITE 2059",
+        "qty": 24
+      }
+    ]
+  }
 ]
 };
 
-let currentLeather = "PEGASUS";
+let currentLeather = "GRAND SLAM";
 let FORMULAS = FORMULAS_BY_LEATHER[currentLeather];
 
 
