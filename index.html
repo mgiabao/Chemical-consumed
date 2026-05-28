@@ -201,6 +201,20 @@
   .actual-input:focus { border-color: #000; }
   .actual-input.overridden { border-color: #000; }
 
+  /* Hide spinner buttons on number inputs, keep manual number typing */
+  .actual-input::-webkit-outer-spin-button,
+  .actual-input::-webkit-inner-spin-button,
+  .batch-input::-webkit-outer-spin-button,
+  .batch-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .actual-input[type=number],
+  .batch-input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
   /* ── COLLAPSED CARD ── */
   .card-body { display: none; }
   .card-body.visible { display: block; }
@@ -290,7 +304,7 @@
         </div>
         <div class="meta-field">
           <label>Leader</label>
-          <input type="text" id="meta-leader" placeholder="Họ tên..." style="width:115px" />
+          <input type="text" id="meta-leader" placeholder="Họ tên..." style="width:115px" required />
         </div>
         <div class="meta-field">
           <label>Loại da</label>
@@ -1035,6 +1049,14 @@ body{background:#fff!important;}
 async function recordConsumedToSheet() {
   if (!APPS_SCRIPT_WEB_APP_URL || APPS_SCRIPT_WEB_APP_URL.includes('PASTE_YOUR')) {
     showRecordStatus('Chưa cấu hình Apps Script Web App URL. Hãy dán URL vào biến APPS_SCRIPT_WEB_APP_URL trong file HTML.', 'err');
+    return;
+  }
+
+  const leaderInput = document.getElementById('meta-leader');
+  const leaderName = (leaderInput?.value || '').trim();
+  if (!leaderName) {
+    showRecordStatus('Vui lòng nhập tên Leader trước khi Record Consumed.', 'warn');
+    if (leaderInput) leaderInput.focus();
     return;
   }
 
