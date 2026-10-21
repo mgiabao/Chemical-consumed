@@ -1480,7 +1480,11 @@ function updateTotals(idx) {
       const isDiff = (expected !== null && Math.abs(v - expected) > 0.0005) || (expected === null);
       row.classList.toggle('row-diff', isDiff);
     } else {
-      row.classList.remove('row-diff');
+      // Ô SL thực tế bị xóa/để trống: coi như 0 và so với công thức.
+      // Chất có định mức > 0 mà không có số thực tế => lệch công thức => hiện diff.
+      const expectedBlank = (!isNaN(batchVal) && batchVal > 0 && chem.qty !== null)
+        ? parseFloat(fmt(chem.qty * batchVal / formulaBase(formula))) : null;
+      row.classList.toggle('row-diff', expectedBlank !== null && expectedBlank > 0.0005);
     }
   });
   document.getElementById(`total_actual_${idx}`).textContent = hasAny ? fmt(sum) : '—';
