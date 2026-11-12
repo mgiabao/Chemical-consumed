@@ -1150,11 +1150,15 @@ function getActiveFormulaPayloads() {
   // Generate the Transaction ID once for this record/print cycle.
   // Reuse the same ID for every row, the PDF, and the printed form.
   if (!currentTransactionId) {
+    const createdAt = new Date();
+    const pad2 = n => String(n).padStart(2, '0');
+    const createdTime = `${pad2(createdAt.getHours())}:${pad2(createdAt.getMinutes())}:${pad2(createdAt.getSeconds())}`;
     currentTransactionId = [
       currentLeather.replace(/\s+/g, '-'),
       date,
+      createdTime,
       leader || 'NO-LEADER',
-      Date.now()
+      createdAt.getTime()
     ].join('|');
   }
 
